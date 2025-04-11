@@ -149,6 +149,18 @@ public enum TokenType implements Serializable {
   RANGES,
 
   /**
+   * Represents the enumerated type for the object of type {@code ByteSize}.
+   * This type is associated with byte size values with units like KB, MB, GB, etc.
+   */
+  BYTE_SIZE,
+
+  /**
+   * Represents the enumerated type for the object of type {@code TimeDuration}.
+   * This type is associated with time duration values with units like ms, s, m, etc.
+   */
+  TIME_DURATION,
+
+  /**
    * Represents the enumerated type for the object of type {@code String} with restrictions
    * on characters that can be present in a string.
    */
