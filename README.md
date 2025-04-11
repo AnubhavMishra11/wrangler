@@ -31,7 +31,32 @@ More [here](wrangler-docs/upcoming-features.md) on upcoming features.
   * **ByteSize and TimeDuration Parsers** - Wrangler now supports native parsing of byte size values (like 10KB, 1.5MB) and time duration values (like 100ms, 1.5s) through the new `BYTE_SIZE` and `TIME_DURATION` token types. These parsers make it easier to handle units in data processing recipes.
     * The `ByteSize` parser supports units: B, KB, MB, GB, TB, PB
     * The `TimeDuration` parser supports units: ns, ms, s, m, h, d
+    * Both parsers support case-insensitive units and whitespace between values and units
     * The new `aggregate-stats` directive demonstrates usage of these parsers for aggregating data sizes and time durations
+
+  * **Using ByteSize and TimeDuration Parsers**:
+    * **In Java Code**:
+      ```java
+      // Parse a byte size value
+      ByteSize size = new ByteSize("1.5GB");
+      long bytes = size.getBytes();  // 1.5 * 1024 * 1024 * 1024
+      double mbValue = size.convertTo("MB");  // 1536.0
+
+      // Parse a time duration value
+      TimeDuration duration = new TimeDuration("1.5m");
+      long nanoseconds = duration.getNanoseconds();  // 1.5 * 60 * 1_000_000_000
+      double secondsValue = duration.convertTo("s");  // 90.0
+      ```
+
+    * **Using the AggregateStats Directive in a Recipe**:
+      ```
+      # Basic usage
+      aggregate-stats :data_transfer_size :response_time :total_size_mb :total_time_sec
+
+      # With custom output units
+      aggregate-stats :data_transfer_size :response_time :total_size_kb :total_time_ms 'KB' 'ms'
+      ```
+      This directive aggregates the byte sizes in the `data_transfer_size` column and the time durations in the `response_time` column, and outputs the results in the specified output columns with optional unit conversion.
 
   * A new capability that allows CDAP Administrators to **restrict the directives** that are accessible to their users.
 More information on configuring can be found [here](wrangler-docs/exclusion-and-aliasing.md)
@@ -118,7 +143,7 @@ These directives are currently available:
 | **Unique ID**                                                          |                                                                  |
 | [UUID Generation](wrangler-docs/directives/generate-uuid.md)                    | Generates a universally unique identifier (UUID) .Recommended to use with Wrangler version 4.4.0 and above due to an important bug fix [CDAP-17732](https://cdap.atlassian.net/browse/CDAP-17732)             |
 | **Aggregates**                                                         |                                                                  |
-| aggregate-stats                                                       | Aggregates byte sizes and time durations with unit conversion     |
+| [aggregate-stats](wrangler-docs/directives/aggregate-stats.md)                   | Aggregates byte sizes and time durations with unit conversion     |
 | **Date Transformations**                                               |                                                                  |
 | [Diff Date](wrangler-docs/directives/diff-date.md)                              | Calculates the difference between two dates                      |
 | [Format Date](wrangler-docs/directives/format-date.md)                          | Custom patterns for date-time formatting                         |
