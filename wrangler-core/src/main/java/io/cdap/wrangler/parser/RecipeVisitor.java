@@ -22,6 +22,7 @@ import io.cdap.wrangler.api.SourceInfo;
 import io.cdap.wrangler.api.Triplet;
 import io.cdap.wrangler.api.parser.Bool;
 import io.cdap.wrangler.api.parser.BoolList;
+import io.cdap.wrangler.api.parser.ByteSize;
 import io.cdap.wrangler.api.parser.ColumnName;
 import io.cdap.wrangler.api.parser.ColumnNameList;
 import io.cdap.wrangler.api.parser.DirectiveName;
@@ -33,6 +34,7 @@ import io.cdap.wrangler.api.parser.Properties;
 import io.cdap.wrangler.api.parser.Ranges;
 import io.cdap.wrangler.api.parser.Text;
 import io.cdap.wrangler.api.parser.TextList;
+import io.cdap.wrangler.api.parser.TimeDuration;
 import io.cdap.wrangler.api.parser.Token;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
@@ -201,9 +203,37 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
    * within the quotes and creates a token type <code>Text</code>.
    */
   @Override
-  public RecipeSymbol.Builder visitText(DirectivesParser.TextContext ctx) {
-    String value = ctx.String().getText();
-    builder.addToken(new Text(value.substring(1, value.length() - 1)));
+  public RecipeSymbol.Builder visitValue(DirectivesParser.ValueContext ctx) {
+    if (ctx.String() != null) {
+      String value = ctx.String().getText();
+      builder.addToken(new Text(value.substring(1, value.length() - 1)));
+    } else if (ctx.Number() != null) {
+      builder.addToken(new Numeric(new LazyNumber(ctx.Number().getText())));
+    } else if (ctx.Column() != null) {
+      builder.addToken(new ColumnName(ctx.Column().getText().substring(1)));
+    } else if (ctx.Bool() != null) {
+      builder.addToken(new Bool(Boolean.valueOf(ctx.Bool().getText())));
+    } else if (ctx.BYTE_SIZE() != null) {
+      builder.addToken(new ByteSize(ctx.BYTE_SIZE().getText()));
+    } else if (ctx.TIME_DURATION() != null) {
+      builder.addToken(new TimeDuration(ctx.TIME_DURATION().getText()));
+    }
+    return builder;
+  }
+
+  /**
+   * This visitor method handles byte size tokens like 10KB, 1.5MB, etc.
+   */
+  public RecipeSymbol.Builder visitByteSize(DirectivesParser.ValueContext ctx) {
+    builder.addToken(new ByteSize(ctx.BYTE_SIZE().getText()));
+    return builder;
+  }
+
+  /**
+   * This visitor method handles time duration tokens like 100ms, 1.5s, etc.
+   */
+  public RecipeSymbol.Builder visitTimeDuration(DirectivesParser.ValueContext ctx) {
+    builder.addToken(new TimeDuration(ctx.TIME_DURATION().getText()));
     return builder;
   }
 

@@ -28,6 +28,11 @@ More [here](wrangler-docs/upcoming-features.md) on upcoming features.
     * Various `TokenType` supported by system [here](../api/src/main/java/io/cdap/wrangler/api/parser/TokenType.java)
     * Custom Directive Implementation Internals [here](wrangler-docs/udd-internal.md)
 
+  * **ByteSize and TimeDuration Parsers** - Wrangler now supports native parsing of byte size values (like 10KB, 1.5MB) and time duration values (like 100ms, 1.5s) through the new `BYTE_SIZE` and `TIME_DURATION` token types. These parsers make it easier to handle units in data processing recipes.
+    * The `ByteSize` parser supports units: B, KB, MB, GB, TB, PB
+    * The `TimeDuration` parser supports units: ns, ms, s, m, h, d
+    * The new `aggregate-stats` directive demonstrates usage of these parsers for aggregating data sizes and time durations
+
   * A new capability that allows CDAP Administrators to **restrict the directives** that are accessible to their users.
 More information on configuring can be found [here](wrangler-docs/exclusion-and-aliasing.md)
 
@@ -112,6 +117,8 @@ These directives are currently available:
 | [Encode](wrangler-docs/directives/encode.md)                                    | Encodes a column value as one of `base32`, `base64`, or `hex`    |
 | **Unique ID**                                                          |                                                                  |
 | [UUID Generation](wrangler-docs/directives/generate-uuid.md)                    | Generates a universally unique identifier (UUID) .Recommended to use with Wrangler version 4.4.0 and above due to an important bug fix [CDAP-17732](https://cdap.atlassian.net/browse/CDAP-17732)             |
+| **Aggregates**                                                         |                                                                  |
+| aggregate-stats                                                       | Aggregates byte sizes and time durations with unit conversion     |
 | **Date Transformations**                                               |                                                                  |
 | [Diff Date](wrangler-docs/directives/diff-date.md)                              | Calculates the difference between two dates                      |
 | [Format Date](wrangler-docs/directives/format-date.md)                          | Custom patterns for date-time formatting                         |
